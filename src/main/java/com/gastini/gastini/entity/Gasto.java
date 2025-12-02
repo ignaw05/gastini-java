@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @RequiredArgsConstructor
 @Getter
 @Setter
@@ -14,6 +16,7 @@ public class Gasto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private LocalDateTime fecha;
     private String descripcion;
 
     private double monto;

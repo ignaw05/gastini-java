@@ -7,6 +7,8 @@ import lombok.Setter;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @RequiredArgsConstructor
 @Getter
 @Setter
@@ -18,5 +20,6 @@ public class Tienda {
     private String nombre;
 
     @OneToMany(mappedBy = "tienda")
+    @JsonIgnore
     private List<Gasto> gastos;
 }

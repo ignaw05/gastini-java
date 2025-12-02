@@ -1,9 +1,13 @@
 package com.gastini.gastini.controller;
 
+import com.gastini.gastini.dto.DTOGastoRequest;
+import com.gastini.gastini.dto.DTOGastoResponse;
 import com.gastini.gastini.service.GastoService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class GastoController {
@@ -14,29 +18,39 @@ public class GastoController {
     }
 
     @GetMapping("/gastos")
-    public void getAllGastos(){
-
+    public List<DTOGastoResponse> getAllGastos() {
+        List<DTOGastoResponse> gastos = service.getAllGastos();
+        return gastos;
     }
 
     @GetMapping("/gastos/id={id}")
-    public void getGastosById(@PathVariable String id){
-
+    public DTOGastoResponse getGastoById(@PathVariable Long id) throws Exception {
+        DTOGastoResponse gastos = service.getGastoById(id);
+        return gastos;
     }
 
     @GetMapping("/gastos/cat={categoria}")
-    public void getGastosByCategoria(@PathVariable String categoria){
-
+    public List<DTOGastoResponse> getGastosByCategoria(@PathVariable String categoria) {
+        List<DTOGastoResponse> gastos = service.getGastosByCategoria(categoria);
+        return gastos;
     }
 
     @GetMapping("/gastos/cta={cuenta}")
-    public void getGastosByCuenta(@PathVariable String cuenta){
-
+    public List<DTOGastoResponse> getGastosByCuenta(@PathVariable String cuenta) {
+        List<DTOGastoResponse> gastos = service.getGastosByCuenta(cuenta);
+        return gastos;
     }
 
     @GetMapping("/gastos/tienda={tienda}")
-    public void getGastosByTienda(@PathVariable String tienda){
-
+    public List<DTOGastoResponse> getGastosByTienda(@PathVariable String tienda) {
+        List<DTOGastoResponse> gastos = service.getGastosByTienda(tienda);
+        return gastos;
     }
 
+    @PostMapping("/gastos")
+    @ResponseStatus(HttpStatus.CREATED)
+    public DTOGastoResponse createGasto(@Valid @RequestBody DTOGastoRequest gastoRequest) throws Exception {
+        return service.createGasto(gastoRequest);
+    }
 
 }
