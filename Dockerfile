@@ -1,25 +1,33 @@
-# Multi-stage build para optimizar el tamaño de la imagen
-
-# Etapa 1: Build
-FROM gradle:8.5-jdk21 AS build
+# ========================================
+# ETAPA 1: BUILD (Compilación)
+# ========================================
+FROM alpine:latest as build
 
 WORKDIR /app
+
+# Actualizar e instalar OpenJDK 21
+RUN apk update && apk add openjdk21
 
 # Copiar archivos de configuración de Gradle
 COPY build.gradle settings.gradle ./
 COPY gradle ./gradle
 COPY gradlew ./
 
-# Descargar dependencias (se cachea si no cambian)
+# Dar permisos de ejecución al script gradlew
+RUN chmod +x ./gradlew
+
+# Descargar dependencias
 RUN ./gradlew dependencies --no-daemon
 
 # Copiar el código fuente
 COPY src ./src
 
-# Construir la aplicación (sin tests para acelerar)
-RUN ./gradlew clean build -x test --no-daemon
+# Construir la aplicación
+RUN ./gradlew bootJar --no-daemon
 
-# Etapa 2: Runtime
+# ========================================
+# ETAPA 2: RUNTIME (Ejecución)
+# ========================================
 FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
@@ -28,15 +36,11 @@ WORKDIR /app
 RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring
 
-# Copiar el JAR desde la etapa de build
-COPY --from=build /app/build/libs/*.jar app.jar
+# Copiar el JAR generado
+COPY --from=build /app/build/libs/gastini-0.0.1-SNAPSHOT.jar app.jar
 
-# Exponer el puerto (Render usa la variable PORT)
+# Exponer puerto (documentación)
 EXPOSE 8080
 
-# Variables de entorno por defecto
-ENV JAVA_OPTS="-Xmx512m -Xms256m"
-
-# Comando para ejecutar la aplicación
-# Render inyecta la variable PORT automáticamente
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Dserver.port=${PORT:-8080} -jar app.jar"]
+# Ejecutar la aplicación
+ENTRYPOINT ["java", "-jar", "app.jar"]
