@@ -24,7 +24,7 @@ public class GastoController {
     }
 
     @GetMapping("/gastos/id={id}")
-    public DTOGastoResponse getGastoById(@PathVariable Long id) throws Exception {
+    public DTOGastoResponse getGastoById(@PathVariable Long id) {
         DTOGastoResponse gastos = service.getGastoById(id);
         return gastos;
     }
@@ -49,7 +49,7 @@ public class GastoController {
 
     @PostMapping("/gastos")
     @ResponseStatus(HttpStatus.CREATED)
-    public DTOGastoResponse createGasto(@Valid @RequestBody DTOGastoRequest gastoRequest) throws Exception {
+    public DTOGastoResponse createGasto(@Valid @RequestBody DTOGastoRequest gastoRequest) {
         return service.createGasto(gastoRequest);
     }
 

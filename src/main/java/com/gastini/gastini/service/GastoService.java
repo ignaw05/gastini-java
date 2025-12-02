@@ -10,6 +10,7 @@ import com.gastini.gastini.repository.CategoriaRepository;
 import com.gastini.gastini.repository.CuentaPagoRepository;
 import com.gastini.gastini.repository.GastoRepository;
 import com.gastini.gastini.repository.TiendaRepository;
+import com.gastini.gastini.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,21 +32,21 @@ public class GastoService {
         this.cuentaPagoRepository = cuentaPagoRepository;
     }
 
-    public DTOGastoResponse createGasto(DTOGastoRequest gastoRequest) throws Exception {
+    public DTOGastoResponse createGasto(DTOGastoRequest gastoRequest) {
         // Buscar las entidades relacionadas por nombre
         Categoria categoria = categoriaRepository.findByNombre(gastoRequest.getCategoria());
         if (categoria == null) {
-            throw new Exception("Categoria no encontrada: " + gastoRequest.getCategoria());
+            throw new ResourceNotFoundException("Categoria no encontrada: " + gastoRequest.getCategoria());
         }
 
         Tienda tienda = tiendaRepository.findByNombre(gastoRequest.getTienda());
         if (tienda == null) {
-            throw new Exception("Tienda no encontrada: " + gastoRequest.getTienda());
+            throw new ResourceNotFoundException("Tienda no encontrada: " + gastoRequest.getTienda());
         }
 
         CuentaPago cuentaPago = cuentaPagoRepository.findByNombre(gastoRequest.getCuentaPago());
         if (cuentaPago == null) {
-            throw new Exception("Cuenta de pago no encontrada: " + gastoRequest.getCuentaPago());
+            throw new ResourceNotFoundException("Cuenta de pago no encontrada: " + gastoRequest.getCuentaPago());
         }
 
         // Crear el gasto con las entidades relacionadas
@@ -89,8 +90,8 @@ public class GastoService {
         return gastoResponses;
     }
 
-    public DTOGastoResponse getGastoById(Long id) throws Exception {
-        Gasto gasto = repository.findById(id).orElseThrow(() -> new Exception("Not found"));
+    public DTOGastoResponse getGastoById(Long id) {
+        Gasto gasto = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Not found"));
         return DTOGastoResponse.fromEntity(gasto);
     }
 }
